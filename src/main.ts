@@ -1,8 +1,15 @@
-import { logger } from "@logger";
+import { Logger } from "tslog";
+
+import { ServiceManager } from "@manager";
+
+
 
 async function main() {
-    logger.debug("The main function was launched.");
-    logger.debug("A mistake was not found.");
+    const logger = new Logger();
+
+    const serviceManager = new ServiceManager();
+    serviceManager.setService(logger);
+
 }
 
 
