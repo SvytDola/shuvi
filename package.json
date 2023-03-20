@@ -16,6 +16,7 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
+    "discord.js": "^14.8.0",
     "tslog": "^4.8.2"
   }
 }

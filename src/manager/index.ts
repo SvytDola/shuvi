@@ -1,1 +1,1 @@
-export { ServiceManager } from "./service";
+export { ServiceManager, ServiceNotFound } from "./service";
