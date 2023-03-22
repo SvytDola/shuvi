@@ -1,10 +1,13 @@
 import { Logger } from "tslog";
 import { readFileSync } from "fs";
+import { Client, Events, GatewayIntentBits, Interaction } from "discord.js";
 
-
-import { Config, ConfigService } from "@service";
+import { 
+    Command,
+    Ping 
+} from "@command";
+import { ConfigService } from "@service";
 import { ServiceManager } from "@manager";
-
 
 
 /**
@@ -16,18 +19,51 @@ async function main() {
     /**
      * Reading the config from the file.
      */
-    const file = readFileSync("config.json");
-    const config: Config = JSON.parse(file.toString());
+    const buffer = readFileSync("config.json");
+    const config: ConfigService.Config = JSON.parse(buffer.toString());
 
     logger.debug("The config is loaded.")
 
     const configService = new ConfigService(config);
 
-    const serviceManager = new ServiceManager();
+    const serviceManager = new ServiceManager()
+        .addService(configService)
+        .addService(logger);
 
-    serviceManager.setService(configService);
-    serviceManager.setService(logger);
+    logger.debug("Services were added.")
 
+    const client = new Client({
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildVoiceStates,
+            GatewayIntentBits.DirectMessages,
+            GatewayIntentBits.MessageContent,
+            GatewayIntentBits.GuildMessages
+        ]
+    });
+
+    const commands = [
+        new Ping()
+    ];
+    const mapOfCommands = new Map<string, Command>();
+
+    for (const command of commands) {
+        mapOfCommands.set(command.data.name, command);
+    }
+
+    logger.debug("The commands were loaded.")
+
+
+    client.addListener(Events.InteractionCreate, async (interaction: Interaction) => {
+        if (!interaction.isChatInputCommand()) return;
+
+        const command = mapOfCommands.get(interaction.commandName);
+        if (command === undefined) return;
+        
+        await command.execute(interaction, serviceManager);
+    });
+
+    await client.login(config.clientId);
 
 }
 

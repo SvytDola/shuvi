@@ -12,8 +12,9 @@ export class ServiceManager {
         return value;
     }
 
-    setService<T extends object>(obj: T) {
+    addService<T extends object>(obj: T): ServiceManager {
         this.cache.set(obj.constructor.name, obj);
+        return this;
     }
 }
 
@@ -23,3 +24,4 @@ export class ServiceNotFound extends Error {
         super("Service not found.");
     }
 }
+

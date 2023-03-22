@@ -6,33 +6,36 @@ export class ConfigService {
     /**
      * Our config will be stored here.
      */
-    private data: Config;
+    private readonly data: ConfigService.Config;
 
-    constructor(data: Config) { 
+    constructor(data: ConfigService.Config) {
         this.data = data;
     }
 
-    get(key: keyof Config) {
-        return this.data[key];
+    get(): ConfigService.Config {
+        return this.data;
     }
 }
 
 
-export type Config = {
+export declare namespace ConfigService {
 
-    /**
-     * Discord auth token.
-     */
-    token: string;
+    export type Config = {
 
-    /**
-     * Discord user id.
-     */
-    clientId: string;
+        /**
+         * Discord auth token.
+         */
+        token: string;
 
-    /**
-     * Id guilds to which commands will be added.
-     */
-    guildIds: string[];
+        /**
+         * Discord user id.
+         */
+        clientId: string;
 
+        /**
+         * Id guilds to which commands will be added.
+         */
+        guildIds: string[];
+
+    }
 }
