@@ -8,6 +8,7 @@ import {
 } from "@command";
 import { ConfigService } from "@service";
 import { ServiceManager } from "@manager";
+import { registerCommandsInGlobal, registerCommandsInGuild } from "@register";
 
 
 /**
@@ -45,14 +46,24 @@ async function main() {
     const commands = [
         new Ping()
     ];
+    const guildCommands = [];
+    const globalCommands = [];
+
     const mapOfCommands = new Map<string, Command>();
 
     for (const command of commands) {
         mapOfCommands.set(command.data.name, command);
+        const json = command.data.toJSON();
+        command.isGlobal ? globalCommands.push(json) : guildCommands.push(json);
     }
 
-    logger.debug("The commands were loaded.")
+    await registerCommandsInGlobal(config.token, config.clientId, globalCommands);
+    
+    for (const guild of config.guildIds) {
+        await registerCommandsInGuild(config.token, config.clientId, guild, globalCommands);
+    }
 
+    logger.debug("The commands were registered.")
 
     client.addListener(Events.InteractionCreate, async (interaction: Interaction) => {
         if (!interaction.isChatInputCommand()) return;
@@ -63,7 +74,10 @@ async function main() {
         await command.execute(interaction, serviceManager);
     });
 
-    await client.login(config.clientId);
+    client.addListener(Events.ClientReady, () => logger.debug("Connected."))
+
+    logger.debug("Connecting...");
+    await client.login(config.token);
 
 }
 
