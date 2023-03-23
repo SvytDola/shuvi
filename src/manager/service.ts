@@ -1,3 +1,14 @@
+/**
+ * @example
+ * ```ts
+ * from { Logger } import "tslog";
+ * 
+ * const serviceManager = new ServiceManager()
+ *      .setService(new Logger());
+ * 
+ * const logger = serviceManager.getService(Logger);
+ * ```
+ */
 export class ServiceManager {
 
     // key -> value
