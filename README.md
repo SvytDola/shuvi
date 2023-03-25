@@ -3,7 +3,7 @@ This is a discord application design pattern.
 
 * [Installation](#installation)
 * [Configuration](#configuration)
-    * [Add custom command](#add-custom-tommand)
+    * [Add custom command](#add-custom-command)
 * [Running app](#running-the-app)
 * [License](#license)
 
@@ -25,7 +25,7 @@ Create a `config.json` file in the root of project:
 }
 ```
 
-## Add custom tommand
+## Add custom command
 You can also add your custom command in `src/command`.
 
 Example:
