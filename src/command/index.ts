@@ -20,4 +20,6 @@ export type Command = {
     execute(interaction: ChatInputCommandInteraction, serviceManager: ServiceManager): Promise<void>;
 }
 
+export type SubCommand = Omit<Command, "isGlobal" | "data">;
+
 export { Ping } from "./ping";

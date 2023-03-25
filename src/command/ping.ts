@@ -4,11 +4,12 @@ import { ServiceManager } from "@manager";
 import { Command, SlashCommand } from "@command";
 
 export class Ping implements Command {
+
     data: SlashCommand;
     isGlobal: boolean;
 
     constructor() {
-        this.isGlobal = true
+        this.isGlobal = true;
         this.data = new SlashCommandBuilder()
             .setName("ping")
             .setDescription("Pong!");
