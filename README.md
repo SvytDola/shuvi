@@ -52,14 +52,15 @@ export class Example implements Command {
     }
 }
 ```
-Next, you need to escort this command in the file `src/command/index.ts`.
+Next, you need to export this command and add in list in the file `src/command/index.ts`.
 ```ts
+// src/command/index.ts
 export { Example } from "./example";
 ```
 
 Then import the command in `src/main.ts`.
 ```ts
-
+// src/main.ts
 // ...
 import {
     Ping,
