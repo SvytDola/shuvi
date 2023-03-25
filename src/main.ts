@@ -1,17 +1,19 @@
 import { Logger } from "tslog";
-import { readFileSync } from "fs";
-import { Client, Events, GatewayIntentBits, Interaction } from "discord.js";
+import { Client, Events, GatewayIntentBits } from "discord.js";
 
 import {
     Ping
 } from "@command";
 import { ConfigService } from "@service";
 import { ServiceManager } from "@manager";
+import { loadConfigFromFile } from "@util";
 import { registerCommands } from "@register";
+import { onInteractionCreate } from "@event";
 
 
-/** ё
+/** 
  * The function starts the entire project.
+ * Register commands.
  * Reading the config from the file.
  */
 async function main() {
@@ -20,12 +22,9 @@ async function main() {
         new Ping()
     ];
 
+    const config = loadConfigFromFile("config.json");
+
     const logger = new Logger();
-
-    const buffer = readFileSync("config.json");
-    const config: ConfigService.Config = JSON.parse(buffer.toString());
-    logger.debug("The config is loaded.")
-
     const configService = new ConfigService(config);
 
     const serviceManager = new ServiceManager()
@@ -33,8 +32,9 @@ async function main() {
         .addService(logger);
 
     const mapOfCommands = await registerCommands(config.token, config.clientId, config.guildIds, commands);
-    logger.debug("The commands were registered.")
+    logger.debug("The commands were registered.");
 
+    const onInteraction = onInteractionCreate.bind(null, mapOfCommands, serviceManager);
     const client = new Client({
         intents: [
             GatewayIntentBits.Guilds,
@@ -43,14 +43,9 @@ async function main() {
             GatewayIntentBits.MessageContent,
             GatewayIntentBits.GuildMessages
         ]
-    }).addListener(Events.InteractionCreate, async (interaction: Interaction) => {
-        if (!interaction.isChatInputCommand()) return;
-
-        const command = mapOfCommands.get(interaction.commandName);
-        if (command === undefined) return;
-
-        await command.execute(interaction, serviceManager);
-    }).addListener(Events.ClientReady, () => logger.debug("Connected."))
+    })
+        .addListener(Events.InteractionCreate, onInteraction)
+        .addListener(Events.ClientReady, () => logger.debug("Connected."));
 
     logger.debug("Connecting...");
     await client.login(config.token);
